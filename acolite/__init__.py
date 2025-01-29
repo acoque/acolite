@@ -76,7 +76,7 @@ path = os.path.dirname(code_path)
 ## find config file
 search_config = True
 while search_config:
-    cfile = os.path.join(path, 'config','config.txt')
+    cfile = os.path.join(path, 'config','config.toml')
     if os.path.exists(cfile):
         search_config = False
     else:
@@ -86,7 +86,7 @@ while search_config:
         sys.exit()
 
 ## read config
-config = shared.import_config(cfile)
+config = shared.import_toml(cfile)
 config['code_path'] = code_path
 config['path'] = path
 
@@ -128,7 +128,7 @@ for t in config:
 ## end replace $ACDIR
 
 ## add credentials
-credentials = shared.import_config(config['credentials_file'])
+credentials = shared.import_toml(config['credentials_file'])
 for cr in credentials:
     if cr not in config: config[cr] = credentials[cr]
 del credentials
@@ -140,12 +140,8 @@ for t in config:
     if t in ['EARTHDATA_u', 'EARTHDATA_p']:
         if (t not in os.environ) & (len(config[t]) > 0): os.environ[t] = config[t]
         continue
-    ## split lists (currently only sensors)
-    if ',' in config[t]:
-        config[t] = config[t].split(',')
-        continue
 
-    if (os.path.exists(config[t])):
+    if isinstance(config[t], str) and os.path.exists(config[t]):
         config[t] = os.path.abspath(config[t])
 
 if 'verbosity' not in config: config['verbosity'] = 5

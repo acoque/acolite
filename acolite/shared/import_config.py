@@ -3,6 +3,12 @@
 ## Last modifications: 2018-07-25 (QV) changed strip and skip characters
 ##                     2023-07-30 (QV) added parse keyword
 
+try:
+    import tomllib
+except ModuleNotFoundError:
+    import tomli as tomllib
+
+
 def import_config(file, parse=False):
     import os
     config={}
@@ -31,3 +37,8 @@ def import_config(file, parse=False):
     else:
         print('{} not found'.format(file))
     return(config)
+
+def import_toml(file):
+    with open(file, mode="rb") as f:
+        config = tomllib.load(f)
+    return config
